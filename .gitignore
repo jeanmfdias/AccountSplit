@@ -4,3 +4,5 @@ backend/var/
 backend/.phpunit.result.cache
 frontend/node_modules/
 frontend/dist/
+
+.idea/
