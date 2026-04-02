@@ -1,0 +1,9 @@
+services:
+  app:
+    build:
+      target: dev
+    environment:
+      XDEBUG_MODE: develop,coverage
+      PHP_IDE_CONFIG: serverName=accountsplit
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
