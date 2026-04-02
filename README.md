@@ -179,7 +179,7 @@ The balance endpoint returns:
 - [x] **Phase 0** — Docker, Nginx, Makefile infrastructure
 - [x] **Phase 0** — Symfony skeleton + all packages installed
 - [x] **Phase 1** — Domain entities (Group, Participant, Bill, BillShare), repositories, migrations
-- [ ] **Phase 2** — SplitCalculator service + unit tests (equal / percentage / custom)
+- [x] **Phase 2** — SplitCalculator service + unit tests (equal / percentage / custom)
 - [ ] **Phase 3** — BalanceCalculator service + unit tests (net balances + minimal transfers)
 - [ ] **Phase 4** — API Platform CRUD endpoints + feature tests
 - [ ] **Phase 5** — Balance endpoint (`GET /api/groups/{id}/balance`) + feature tests
