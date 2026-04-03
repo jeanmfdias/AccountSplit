@@ -182,7 +182,7 @@ The balance endpoint returns:
 - [x] **Phase 2** — SplitCalculator service + unit tests (equal / percentage / custom)
 - [x] **Phase 3** — BalanceCalculator service + unit tests (net balances + minimal transfers)
 - [x] **Phase 4** — API Platform CRUD endpoints + feature tests
-- [ ] **Phase 5** — Balance endpoint (`GET /api/groups/{id}/balance`) + feature tests
+- [x] **Phase 5** — Balance endpoint (`GET /api/groups/{id}/balance`) + feature tests
 - [ ] **Phase 6** — Vue 3 SPA (groups, participants, bills, balance view)
 
 ---

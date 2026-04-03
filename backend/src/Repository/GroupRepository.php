@@ -19,6 +19,23 @@ class GroupRepository extends ServiceEntityRepository
         parent::__construct($registry, Group::class);
     }
 
+    public function findWithBillsAndShares(Uuid $id): ?Group
+    {
+        return $this->createQueryBuilder('g')
+            ->leftJoin('g.bills', 'b')
+            ->addSelect('b')
+            ->leftJoin('b.shares', 's')
+            ->addSelect('s')
+            ->leftJoin('s.participant', 'sp')
+            ->addSelect('sp')
+            ->leftJoin('b.paidBy', 'pb')
+            ->addSelect('pb')
+            ->where('g.id = :id')
+            ->setParameter('id', $id, 'uuid')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     public function findWithParticipants(Uuid $id): ?Group
     {
         return $this->createQueryBuilder('g')
