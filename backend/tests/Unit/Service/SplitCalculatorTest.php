@@ -19,7 +19,7 @@ class SplitCalculatorTest extends TestCase
         $this->calculator = new SplitCalculator();
     }
 
-    public function test_it_splits_equally_among_two_participants(): void
+    public function testItSplitsEquallyAmongTwoParticipants(): void
     {
         $definition = new SplitDefinition(
             type: SplitType::Equal,
@@ -33,7 +33,7 @@ class SplitCalculatorTest extends TestCase
         $this->assertSame(100, $result->sharesByCents['user-2']);
     }
 
-    public function test_it_distributes_remainder_cents_to_first_participants(): void
+    public function testItDistributesRemainderCentsToFirstParticipants(): void
     {
         // 100 cents / 3 = 33 each, remainder 1 → first gets 34
         $definition = new SplitDefinition(
@@ -50,7 +50,7 @@ class SplitCalculatorTest extends TestCase
         $this->assertSame(100, array_sum($result->sharesByCents));
     }
 
-    public function test_it_distributes_remainder_across_multiple_participants(): void
+    public function testItDistributesRemainderAcrossMultipleParticipants(): void
     {
         // 10 cents / 3 = 3 each, remainder 1 → first gets 4
         $definition = new SplitDefinition(
@@ -64,7 +64,7 @@ class SplitCalculatorTest extends TestCase
         $this->assertSame(10, array_sum($result->sharesByCents));
     }
 
-    public function test_equal_split_sum_always_equals_total(): void
+    public function testEqualSplitSumAlwaysEqualsTotal(): void
     {
         $definition = new SplitDefinition(
             type: SplitType::Equal,
@@ -78,7 +78,7 @@ class SplitCalculatorTest extends TestCase
         $this->assertSame(10000, $result->sharesByCents['user-1']);
     }
 
-    public function test_it_splits_by_percentage(): void
+    public function testItSplitsByPercentage(): void
     {
         $definition = new SplitDefinition(
             type: SplitType::Percentage,
@@ -95,7 +95,7 @@ class SplitCalculatorTest extends TestCase
         $this->assertSame(1000, array_sum($result->sharesByCents));
     }
 
-    public function test_percentage_split_sum_always_equals_total_after_rounding(): void
+    public function testPercentageSplitSumAlwaysEqualsTotalAfterRounding(): void
     {
         // 33.33% each of 100 cents = 33 each → sum is 99 → first participant gets +1
         $definition = new SplitDefinition(
@@ -110,7 +110,7 @@ class SplitCalculatorTest extends TestCase
         $this->assertSame(100, array_sum($result->sharesByCents));
     }
 
-    public function test_it_throws_when_percentages_do_not_sum_to_100(): void
+    public function testItThrowsWhenPercentagesDoNotSumTo100(): void
     {
         $this->expectException(InvalidSplitDefinitionException::class);
         $this->expectExceptionMessageMatches('/100/');
@@ -125,7 +125,7 @@ class SplitCalculatorTest extends TestCase
         $this->calculator->calculate($definition);
     }
 
-    public function test_it_splits_by_custom_amounts(): void
+    public function testItSplitsByCustomAmounts(): void
     {
         $definition = new SplitDefinition(
             type: SplitType::Custom,
@@ -141,7 +141,7 @@ class SplitCalculatorTest extends TestCase
         $this->assertSame(200, $result->sharesByCents['user-3']);
     }
 
-    public function test_it_throws_when_custom_amounts_do_not_sum_to_total(): void
+    public function testItThrowsWhenCustomAmountsDoNotSumToTotal(): void
     {
         $this->expectException(InvalidSplitDefinitionException::class);
 
@@ -155,7 +155,7 @@ class SplitCalculatorTest extends TestCase
         $this->calculator->calculate($definition);
     }
 
-    public function test_it_throws_when_participant_list_is_empty(): void
+    public function testItThrowsWhenParticipantListIsEmpty(): void
     {
         $this->expectException(InvalidSplitDefinitionException::class);
 

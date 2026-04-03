@@ -30,8 +30,11 @@ A bill-splitting web app for groups. Register expenses paid by someone's credit 
 ### Run locally
 
 ```bash
-# Start all services (API + DB)
+# 1. Start all Docker services (PHP-FPM, Nginx, PostgreSQL)
 make up
+
+# 2. Run database migrations (required on first run)
+make migrate
 
 # API available at:
 http://localhost:8080/api
@@ -39,10 +42,27 @@ http://localhost:8080/api
 # API docs (Swagger UI):
 http://localhost:8080/api/docs
 
-# Start Vue dev server (separate terminal):
-make front-install
+# 3. Start Vue dev server (separate terminal):
+make front-install   # install npm dependencies (first time only)
 make front-dev
 # Frontend at: http://localhost:5173
+```
+
+### Running tests
+
+```bash
+# All tests (requires containers to be running)
+make test
+
+# Individual suites
+make test-unit         # Pure unit tests (fast, no DB)
+make test-integration  # Doctrine integration tests
+make test-feature      # Full HTTP API tests
+
+# Quality gates
+make stan              # PHPStan level 8
+make lint              # PHP CS Fixer dry-run
+make cs-fix            # Fix code style automatically
 ```
 
 ### Common commands
@@ -61,6 +81,7 @@ make migrate-fresh   # Drop DB, recreate, and run all migrations
 make stan            # Run PHPStan (level 8)
 make lint            # Check code style (dry-run)
 make cs-fix          # Fix code style
+make front-install   # Install frontend npm dependencies
 make front-dev       # Start Vue dev server
 make front-build     # Build Vue for production
 ```
@@ -183,7 +204,9 @@ The balance endpoint returns:
 - [x] **Phase 3** — BalanceCalculator service + unit tests (net balances + minimal transfers)
 - [x] **Phase 4** — API Platform CRUD endpoints + feature tests
 - [x] **Phase 5** — Balance endpoint (`GET /api/groups/{id}/balance`) + feature tests
-- [ ] **Phase 6** — Vue 3 SPA (groups, participants, bills, balance view)
+- [x] **Phase 6** — Vue 3 SPA (groups, participants, bills, balance view)
+- [x] **Phase 7** — Quality gates (PHPStan level 8, PHP CS Fixer, GitHub Actions CI)
+- [x] **Phase 8** — README documentation, run-locally steps, testing section
 
 ---
 

@@ -50,7 +50,7 @@ use Symfony\Component\Uid\Uuid;
     ],
     uriVariables: [
         'groupId' => new Link(fromClass: Group::class, toProperty: 'group'),
-        'id'      => new Link(fromClass: Participant::class),
+        'id' => new Link(fromClass: Participant::class),
     ],
     normalizationContext: ['groups' => ['participant:read']],
 )]

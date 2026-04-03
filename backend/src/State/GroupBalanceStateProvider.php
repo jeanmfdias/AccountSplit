@@ -11,7 +11,6 @@ use App\ApiResource\ParticipantBalanceOutput;
 use App\ApiResource\TransferOutput;
 use App\Repository\GroupRepository;
 use App\Service\BalanceCalculator;
-use NumberFormatter;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Uid\Uuid;
 
@@ -20,21 +19,21 @@ use Symfony\Component\Uid\Uuid;
  */
 final class GroupBalanceStateProvider implements ProviderInterface
 {
-    private readonly NumberFormatter $formatter;
+    private readonly \NumberFormatter $formatter;
 
     public function __construct(
         private readonly GroupRepository $groupRepository,
         private readonly BalanceCalculator $balanceCalculator,
     ) {
-        $this->formatter = new NumberFormatter('pt_BR', NumberFormatter::CURRENCY);
+        $this->formatter = new \NumberFormatter('pt_BR', \NumberFormatter::CURRENCY);
     }
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): GroupBalanceOutput
     {
-        $id    = $uriVariables['id'] ?? null;
+        $id = $uriVariables['id'] ?? null;
         $group = $this->groupRepository->findWithBillsAndShares(Uuid::fromString((string) $id));
 
-        if ($group === null) {
+        if (null === $group) {
             throw new NotFoundHttpException('Group not found.');
         }
 
@@ -43,23 +42,23 @@ final class GroupBalanceStateProvider implements ProviderInterface
         $output = new GroupBalanceOutput();
 
         foreach ($groupBalance->balances as $balance) {
-            $item                  = new ParticipantBalanceOutput();
-            $item->participantId   = $balance->participantId;
+            $item = new ParticipantBalanceOutput();
+            $item->participantId = $balance->participantId;
             $item->participantName = $balance->participantName;
-            $item->netCents        = $balance->netCents;
-            $item->formattedNet    = $this->formatCents($balance->netCents);
-            $output->balances[]    = $item;
+            $item->netCents = $balance->netCents;
+            $item->formattedNet = $this->formatCents($balance->netCents);
+            $output->balances[] = $item;
         }
 
         foreach ($groupBalance->transfers as $transfer) {
-            $item                      = new TransferOutput();
-            $item->fromParticipantId   = $transfer->fromParticipantId;
+            $item = new TransferOutput();
+            $item->fromParticipantId = $transfer->fromParticipantId;
             $item->fromParticipantName = $transfer->fromParticipantName;
-            $item->toParticipantId     = $transfer->toParticipantId;
-            $item->toParticipantName   = $transfer->toParticipantName;
-            $item->amountCents         = $transfer->amountCents;
-            $item->formattedAmount     = $this->formatCents($transfer->amountCents);
-            $output->transfers[]       = $item;
+            $item->toParticipantId = $transfer->toParticipantId;
+            $item->toParticipantName = $transfer->toParticipantName;
+            $item->amountCents = $transfer->amountCents;
+            $item->formattedAmount = $this->formatCents($transfer->amountCents);
+            $output->transfers[] = $item;
         }
 
         return $output;

@@ -36,21 +36,23 @@ abstract class ApiTestCase extends WebTestCase
         $em->clear();
     }
 
+    /** @return array<string, mixed> */
     protected function json(string $method, string $uri, mixed $body = null): array
     {
         $this->client->request(
             $method,
             $uri,
-            content: $body !== null ? (string) json_encode($body) : null,
+            content: null !== $body ? (string) json_encode($body) : null,
             server: [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_ACCEPT'  => 'application/json',
+                'HTTP_ACCEPT' => 'application/json',
             ],
         );
 
         return json_decode((string) $this->client->getResponse()->getContent(), true) ?? [];
     }
 
+    /** @return array<string, mixed> */
     protected function jsonPatch(string $uri, mixed $body): array
     {
         $this->client->request(
@@ -59,13 +61,18 @@ abstract class ApiTestCase extends WebTestCase
             content: (string) json_encode($body),
             server: [
                 'CONTENT_TYPE' => 'application/merge-patch+json',
-                'HTTP_ACCEPT'  => 'application/json',
+                'HTTP_ACCEPT' => 'application/json',
             ],
         );
 
         return json_decode((string) $this->client->getResponse()->getContent(), true) ?? [];
     }
 
+    /**
+     * @param list<string> $participantNames
+     *
+     * @return array{0: array<string, mixed>, 1: array<string, array<string, mixed>>}
+     */
     protected function createGroupWithParticipants(string $groupName, array $participantNames): array
     {
         $group = $this->json('POST', '/api/groups', ['name' => $groupName]);

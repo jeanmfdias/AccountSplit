@@ -46,7 +46,7 @@ final class BalanceCalculator
 
         $transfers = $this->minimizeTransfers($nets);
 
-        return new GroupBalance(array_values($balances), $transfers);
+        return new GroupBalance($balances, $transfers);
     }
 
     /**
@@ -54,11 +54,14 @@ final class BalanceCalculator
      * Produces at most n-1 transfers for n participants with non-zero balances.
      *
      * @param array<string, array{name: string, net: int}> $nets
+     *
      * @return list<Transfer>
      */
     private function minimizeTransfers(array $nets): array
     {
-        $debtors   = [];
+        /** @var array<string, array{name: string, net: int}> $debtors */
+        $debtors = [];
+        /** @var array<string, array{name: string, net: int}> $creditors */
         $creditors = [];
 
         foreach ($nets as $id => $data) {
@@ -74,7 +77,9 @@ final class BalanceCalculator
         // Sort creditors descending (most positive first)
         uasort($creditors, fn (array $a, array $b) => $b['net'] <=> $a['net']);
 
-        $debtorIds   = array_keys($debtors);
+        /** @var array<string, array{name: string, net: int}> $debtors */
+        /** @var array<string, array{name: string, net: int}> $creditors */
+        $debtorIds = array_keys($debtors);
         $creditorIds = array_keys($creditors);
         $di = 0;
         $ci = 0;
@@ -87,14 +92,14 @@ final class BalanceCalculator
             $amount = min(abs($debtors[$dId]['net']), $creditors[$cId]['net']);
 
             $transfers[] = new Transfer(
-                fromParticipantId:   $dId,
+                fromParticipantId: $dId,
                 fromParticipantName: $debtors[$dId]['name'],
-                toParticipantId:     $cId,
-                toParticipantName:   $creditors[$cId]['name'],
-                amountCents:         $amount,
+                toParticipantId: $cId,
+                toParticipantName: $creditors[$cId]['name'],
+                amountCents: $amount,
             );
 
-            $debtors[$dId]['net']   += $amount;
+            $debtors[$dId]['net'] += $amount;
             $creditors[$cId]['net'] -= $amount;
 
             if (0 === $debtors[$dId]['net']) {

@@ -18,9 +18,9 @@ final class SplitCalculator
         }
 
         return match ($definition->type) {
-            SplitType::Equal      => $this->calculateEqual($definition),
+            SplitType::Equal => $this->calculateEqual($definition),
             SplitType::Percentage => $this->calculatePercentage($definition),
-            SplitType::Custom     => $this->calculateCustom($definition),
+            SplitType::Custom => $this->calculateCustom($definition),
         };
     }
 
@@ -43,9 +43,7 @@ final class SplitCalculator
         $sum = (float) array_sum($definition->percentages);
 
         if (abs($sum - 100.0) > 0.01) {
-            throw new InvalidSplitDefinitionException(
-                sprintf('Percentages must sum to 100, got %.2f.', $sum)
-            );
+            throw new InvalidSplitDefinitionException(sprintf('Percentages must sum to 100, got %.2f.', $sum));
         }
 
         $shares = [];
@@ -69,13 +67,7 @@ final class SplitCalculator
         $customSum = (int) array_sum($definition->customAmounts);
 
         if ($customSum !== $definition->totalAmountCents) {
-            throw new InvalidSplitDefinitionException(
-                sprintf(
-                    'Custom amounts must sum to %d cents, got %d.',
-                    $definition->totalAmountCents,
-                    $customSum,
-                )
-            );
+            throw new InvalidSplitDefinitionException(sprintf('Custom amounts must sum to %d cents, got %d.', $definition->totalAmountCents, $customSum));
         }
 
         $shares = [];

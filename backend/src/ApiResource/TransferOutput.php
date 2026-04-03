@@ -6,10 +6,10 @@ namespace App\ApiResource;
 
 final class TransferOutput
 {
-    public string $fromParticipantId   = '';
+    public string $fromParticipantId = '';
     public string $fromParticipantName = '';
-    public string $toParticipantId     = '';
-    public string $toParticipantName   = '';
-    public int    $amountCents         = 0;
-    public string $formattedAmount     = '';
+    public string $toParticipantId = '';
+    public string $toParticipantName = '';
+    public int $amountCents = 0;
+    public string $formattedAmount = '';
 }

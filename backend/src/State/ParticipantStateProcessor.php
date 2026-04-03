@@ -14,7 +14,6 @@ use App\Entity\Participant;
 use App\Repository\GroupRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Uid\Uuid;
 
 /**
  * @implements ProcessorInterface<ParticipantInput, Participant|null>
@@ -27,13 +26,13 @@ final class ParticipantStateProcessor implements ProcessorInterface
     ) {
     }
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Participant|null
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?Participant
     {
         if ($operation instanceof Delete) {
             $previous = $context['previous_data'] ?? null;
             if ($previous instanceof Participant) {
                 $managed = $this->entityManager->find(Participant::class, $previous->getId());
-                if ($managed !== null) {
+                if (null !== $managed) {
                     $this->entityManager->remove($managed);
                     $this->entityManager->flush();
                 }
@@ -44,7 +43,7 @@ final class ParticipantStateProcessor implements ProcessorInterface
 
         /** @var ParticipantInput $data */
         $groupId = $uriVariables['groupId'] ?? null;
-        $group   = $this->groupRepository->find($groupId);
+        $group = $this->groupRepository->find($groupId);
 
         if (!$group instanceof Group) {
             throw new NotFoundHttpException('Group not found.');
@@ -55,9 +54,9 @@ final class ParticipantStateProcessor implements ProcessorInterface
             $this->entityManager->persist($participant);
         } else {
             /** @var Participant $previous */
-            $previous     = $context['previous_data'];
-            $participant  = $this->entityManager->find(Participant::class, $previous->getId());
-            if ($participant === null) {
+            $previous = $context['previous_data'];
+            $participant = $this->entityManager->find(Participant::class, $previous->getId());
+            if (null === $participant) {
                 throw new NotFoundHttpException('Participant not found.');
             }
             $participant->setName($data->name);

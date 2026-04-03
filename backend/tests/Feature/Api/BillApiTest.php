@@ -8,17 +8,17 @@ use App\Tests\Feature\ApiTestCase;
 
 class BillApiTest extends ApiTestCase
 {
-    public function test_it_creates_a_bill_with_equal_split_and_materializes_shares(): void
+    public function testItCreatesABillWithEqualSplitAndMaterializesShares(): void
     {
         [$group, $participants] = $this->createGroupWithParticipants('Trip', ['Alice', 'Bob', 'Carlos']);
 
         $payload = [
-            'description'         => 'Hotel',
-            'amountCents'         => 30000,
+            'description' => 'Hotel',
+            'amountCents' => 30000,
             'paidByParticipantId' => $participants['Alice']['id'],
-            'date'                => '2026-01-15T00:00:00+00:00',
-            'splitType'           => 'equal',
-            'participantIds'      => array_column($participants, 'id'),
+            'date' => '2026-01-15T00:00:00+00:00',
+            'splitType' => 'equal',
+            'participantIds' => array_column($participants, 'id'),
         ];
 
         $data = $this->json('POST', "/api/groups/{$group['id']}/bills", $payload);
@@ -34,22 +34,22 @@ class BillApiTest extends ApiTestCase
         }
     }
 
-    public function test_it_creates_a_bill_with_custom_amounts(): void
+    public function testItCreatesABillWithCustomAmounts(): void
     {
         [$group, $participants] = $this->createGroupWithParticipants('Trip', ['Alice', 'Bob', 'Carlos']);
 
-        $aliceId  = $participants['Alice']['id'];
-        $bobId    = $participants['Bob']['id'];
+        $aliceId = $participants['Alice']['id'];
+        $bobId = $participants['Bob']['id'];
         $carlosId = $participants['Carlos']['id'];
 
         $payload = [
-            'description'         => 'Dinner',
-            'amountCents'         => 10000,
+            'description' => 'Dinner',
+            'amountCents' => 10000,
             'paidByParticipantId' => $bobId,
-            'date'                => '2026-01-16T00:00:00+00:00',
-            'splitType'           => 'custom',
-            'participantIds'      => [$aliceId, $bobId, $carlosId],
-            'customAmounts'       => [$aliceId => 5000, $bobId => 3000, $carlosId => 2000],
+            'date' => '2026-01-16T00:00:00+00:00',
+            'splitType' => 'custom',
+            'participantIds' => [$aliceId, $bobId, $carlosId],
+            'customAmounts' => [$aliceId => 5000, $bobId => 3000, $carlosId => 2000],
         ];
 
         $data = $this->json('POST', "/api/groups/{$group['id']}/bills", $payload);
@@ -66,20 +66,20 @@ class BillApiTest extends ApiTestCase
         $this->assertSame(2000, $sharesByParticipant[$carlosId]);
     }
 
-    public function test_it_returns_422_when_custom_amounts_do_not_sum_to_total(): void
+    public function testItReturns422WhenCustomAmountsDoNotSumToTotal(): void
     {
         [$group, $participants] = $this->createGroupWithParticipants('Trip', ['Alice', 'Bob']);
 
         $payload = [
-            'description'         => 'Snack',
-            'amountCents'         => 1000,
+            'description' => 'Snack',
+            'amountCents' => 1000,
             'paidByParticipantId' => $participants['Alice']['id'],
-            'date'                => '2026-01-16T00:00:00+00:00',
-            'splitType'           => 'custom',
-            'participantIds'      => array_column($participants, 'id'),
-            'customAmounts'       => [
+            'date' => '2026-01-16T00:00:00+00:00',
+            'splitType' => 'custom',
+            'participantIds' => array_column($participants, 'id'),
+            'customAmounts' => [
                 $participants['Alice']['id'] => 400,
-                $participants['Bob']['id']   => 400,
+                $participants['Bob']['id'] => 400,
             ],
         ];
 
@@ -88,18 +88,18 @@ class BillApiTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(422);
     }
 
-    public function test_it_rejects_participant_from_different_group(): void
+    public function testItRejectsParticipantFromDifferentGroup(): void
     {
         [$group1, $p1] = $this->createGroupWithParticipants('Group 1', ['Alice']);
-        [, $p2]        = $this->createGroupWithParticipants('Group 2', ['Bob']);
+        [, $p2] = $this->createGroupWithParticipants('Group 2', ['Bob']);
 
         $payload = [
-            'description'         => 'Bill',
-            'amountCents'         => 1000,
+            'description' => 'Bill',
+            'amountCents' => 1000,
             'paidByParticipantId' => $p1['Alice']['id'],
-            'date'                => '2026-01-16T00:00:00+00:00',
-            'splitType'           => 'equal',
-            'participantIds'      => [$p1['Alice']['id'], $p2['Bob']['id']],
+            'date' => '2026-01-16T00:00:00+00:00',
+            'splitType' => 'equal',
+            'participantIds' => [$p1['Alice']['id'], $p2['Bob']['id']],
         ];
 
         $this->json('POST', "/api/groups/{$group1['id']}/bills", $payload);

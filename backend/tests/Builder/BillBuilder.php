@@ -15,11 +15,16 @@ final class BillBuilder
     private string $description = 'Test Bill';
     private int $amountCents = 10000;
     private ?Participant $paidBy = null;
-    private ?\DateTimeImmutable $date = null;
+    private \DateTimeImmutable $date;
     private SplitType $splitType = SplitType::Equal;
     private ?Group $group = null;
-    /** @var array<string, int> participantId => amountCents */
+    /** @var array<string, array{0: Participant, 1: int}> participantId => [Participant, amountCents] */
     private array $shares = [];
+
+    public function __construct()
+    {
+        $this->date = new \DateTimeImmutable();
+    }
 
     public static function new(): self
     {
@@ -66,11 +71,11 @@ final class BillBuilder
         return $clone;
     }
 
-    /** @param array<Participant, int> $shares participant => amountCents */
+    /** @param array<int, array{0: Participant, 1: int}> $shares list of [Participant, amountCents] pairs */
     public function withShares(array $shares): self
     {
         $clone = clone $this;
-        foreach ($shares as $participant => $cents) {
+        foreach ($shares as [$participant, $cents]) {
             $clone->shares[(string) $participant->getId()] = [$participant, $cents];
         }
 
@@ -86,7 +91,7 @@ final class BillBuilder
             $this->description,
             $this->amountCents,
             $paidBy,
-            $this->date ?? new \DateTimeImmutable(),
+            $this->date,
             $this->splitType,
             $group,
         );

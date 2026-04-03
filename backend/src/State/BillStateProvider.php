@@ -6,6 +6,7 @@ namespace App\State;
 
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Operation;
+use ApiPlatform\Metadata\Post;
 use ApiPlatform\State\ProviderInterface;
 use App\Entity\Bill;
 use App\Repository\BillRepository;
@@ -31,10 +32,14 @@ final class BillStateProvider implements ProviderInterface
             return $this->billRepository->findByGroupWithShares(Uuid::fromString((string) $groupId));
         }
 
+        if ($operation instanceof Post) {
+            return null;
+        }
+
         $id = $uriVariables['id'] ?? null;
 
         return $this->entityManager->getRepository(Bill::class)->findOneBy([
-            'id'    => Uuid::fromString((string) $id),
+            'id' => Uuid::fromString((string) $id),
             'group' => Uuid::fromString((string) $groupId),
         ]);
     }

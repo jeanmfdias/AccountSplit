@@ -13,4 +13,7 @@ parameters:
     doctrine:
         objectManagerLoader: tests/doctrine-object-manager.php
     ignoreErrors:
-        - '#Unsafe usage of new static#'
+        # uasort() causes PHPStan to lose the shape type for associative arrays;
+        # the 'name' key is always present — it is set explicitly in the foreach loop above.
+        - message: '#Offset .name. might not exist#'
+          path: src/Service/BalanceCalculator.php

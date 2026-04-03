@@ -6,17 +6,15 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Operation;
-use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\State\ProcessorInterface;
 use App\ApiResource\BillInput;
 use App\Entity\Bill;
 use App\Entity\Group;
 use App\Entity\Participant;
-use App\Enum\SplitType;
+use App\Exception\InvalidSplitDefinitionException;
 use App\Repository\GroupRepository;
 use App\Repository\ParticipantRepository;
-use App\Exception\InvalidSplitDefinitionException;
 use App\Service\BillSharePersister;
 use App\Service\SplitCalculator\SplitDefinition;
 use Doctrine\ORM\EntityManagerInterface;
@@ -36,13 +34,16 @@ final class BillStateProcessor implements ProcessorInterface
     ) {
     }
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): Bill|null
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?Bill
     {
         if ($operation instanceof Delete) {
-            $bill = $context['previous_data'] ?? null;
-            if ($bill instanceof Bill) {
-                $this->entityManager->remove($bill);
-                $this->entityManager->flush();
+            $previous = $context['previous_data'] ?? null;
+            if ($previous instanceof Bill) {
+                $managed = $this->entityManager->find(Bill::class, $previous->getId());
+                if (null !== $managed) {
+                    $this->entityManager->remove($managed);
+                    $this->entityManager->flush();
+                }
             }
 
             return null;
@@ -106,6 +107,7 @@ final class BillStateProcessor implements ProcessorInterface
 
     /**
      * @param list<string> $participantIds
+     *
      * @return array<string, Participant>
      */
     private function loadAndValidateParticipants(
@@ -121,18 +123,14 @@ final class BillStateProcessor implements ProcessorInterface
         $byId = [];
         foreach ($found as $participant) {
             if ((string) $participant->getGroup()->getId() !== (string) $group->getId()) {
-                throw new UnprocessableEntityHttpException(
-                    sprintf('Participant "%s" does not belong to this group.', $participant->getId())
-                );
+                throw new UnprocessableEntityHttpException(sprintf('Participant "%s" does not belong to this group.', $participant->getId()));
             }
             $byId[(string) $participant->getId()] = $participant;
         }
 
         foreach ($allIds as $id) {
             if (!isset($byId[$id])) {
-                throw new UnprocessableEntityHttpException(
-                    sprintf('Participant "%s" not found.', $id)
-                );
+                throw new UnprocessableEntityHttpException(sprintf('Participant "%s" not found.', $id));
             }
         }
 

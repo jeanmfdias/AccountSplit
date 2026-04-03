@@ -8,29 +8,29 @@ use App\Tests\Feature\ApiTestCase;
 
 class BalanceApiTest extends ApiTestCase
 {
-    public function test_it_returns_balance_for_a_group_with_bills(): void
+    public function testItReturnsBalanceForAGroupWithBills(): void
     {
         [$group, $participants] = $this->createGroupWithParticipants('Trip', ['Alice', 'Bob', 'Carlos']);
         $pids = array_column($participants, 'id');
 
         // Bill 1: R$120, paid by Alice, equal split → each owes R$40
         $this->json('POST', "/api/groups/{$group['id']}/bills", [
-            'description'         => 'Hotel',
-            'amountCents'         => 12000,
+            'description' => 'Hotel',
+            'amountCents' => 12000,
             'paidByParticipantId' => $participants['Alice']['id'],
-            'date'                => '2026-01-15T00:00:00+00:00',
-            'splitType'           => 'equal',
-            'participantIds'      => $pids,
+            'date' => '2026-01-15T00:00:00+00:00',
+            'splitType' => 'equal',
+            'participantIds' => $pids,
         ]);
 
         // Bill 2: R$60, paid by Bob, equal split → each owes R$20
         $this->json('POST', "/api/groups/{$group['id']}/bills", [
-            'description'         => 'Taxi',
-            'amountCents'         => 6000,
+            'description' => 'Taxi',
+            'amountCents' => 6000,
             'paidByParticipantId' => $participants['Bob']['id'],
-            'date'                => '2026-01-16T00:00:00+00:00',
-            'splitType'           => 'equal',
-            'participantIds'      => $pids,
+            'date' => '2026-01-16T00:00:00+00:00',
+            'splitType' => 'equal',
+            'participantIds' => $pids,
         ]);
 
         $data = $this->json('GET', "/api/groups/{$group['id']}/balance");
@@ -65,7 +65,7 @@ class BalanceApiTest extends ApiTestCase
         $this->assertArrayHasKey('formattedAmount', $transfer);
     }
 
-    public function test_it_returns_empty_balance_for_group_with_no_bills(): void
+    public function testItReturnsEmptyBalanceForGroupWithNoBills(): void
     {
         $group = $this->json('POST', '/api/groups', ['name' => 'Empty Group']);
 
@@ -76,7 +76,7 @@ class BalanceApiTest extends ApiTestCase
         $this->assertSame([], $data['transfers']);
     }
 
-    public function test_it_returns_404_for_unknown_group_balance(): void
+    public function testItReturns404ForUnknownGroupBalance(): void
     {
         $this->json('GET', '/api/groups/01962222-0000-7000-8000-000000000000/balance');
 

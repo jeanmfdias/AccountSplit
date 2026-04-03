@@ -6,11 +6,8 @@ namespace App\Tests\Unit\Service;
 
 use App\Entity\Bill;
 use App\Entity\BillShare;
-use App\Entity\Group;
-use App\Entity\Participant;
 use App\Enum\SplitType;
 use App\Service\BalanceCalculator;
-use App\Tests\Builder\BillBuilder;
 use App\Tests\Builder\GroupBuilder;
 use App\Tests\Builder\ParticipantBuilder;
 use PHPUnit\Framework\TestCase;
@@ -24,7 +21,7 @@ class BalanceCalculatorTest extends TestCase
         $this->calculator = new BalanceCalculator();
     }
 
-    public function test_it_returns_empty_result_for_group_with_no_bills(): void
+    public function testItReturnsEmptyResultForGroupWithNoBills(): void
     {
         $group = GroupBuilder::new()->build();
 
@@ -34,11 +31,11 @@ class BalanceCalculatorTest extends TestCase
         $this->assertSame([], $result->transfers);
     }
 
-    public function test_it_computes_correct_net_balance_after_equal_split(): void
+    public function testItComputesCorrectNetBalanceAfterEqualSplit(): void
     {
         $group = GroupBuilder::new()->build();
         $alice = ParticipantBuilder::new()->withName('Alice')->withGroup($group)->build();
-        $bob   = ParticipantBuilder::new()->withName('Bob')->withGroup($group)->build();
+        $bob = ParticipantBuilder::new()->withName('Bob')->withGroup($group)->build();
 
         // Alice pays R$100, equal split → Alice 50, Bob 50
         $bill = new Bill('Dinner', 10000, $alice, new \DateTimeImmutable(), SplitType::Equal, $group);
@@ -57,11 +54,11 @@ class BalanceCalculatorTest extends TestCase
         $this->assertSame(-5000, $balanceByName['Bob']);   // paid 0, owes 5000 → -5000
     }
 
-    public function test_it_computes_minimal_transfers_for_two_participants(): void
+    public function testItComputesMinimalTransfersForTwoParticipants(): void
     {
         $group = GroupBuilder::new()->build();
         $alice = ParticipantBuilder::new()->withName('Alice')->withGroup($group)->build();
-        $bob   = ParticipantBuilder::new()->withName('Bob')->withGroup($group)->build();
+        $bob = ParticipantBuilder::new()->withName('Bob')->withGroup($group)->build();
 
         $bill = new Bill('Hotel', 10000, $alice, new \DateTimeImmutable(), SplitType::Equal, $group);
         $bill->addShare(new BillShare($bill, $alice, 5000));
@@ -76,7 +73,7 @@ class BalanceCalculatorTest extends TestCase
         $this->assertSame(5000, $result->transfers[0]->amountCents);
     }
 
-    public function test_it_computes_minimal_transfers_for_three_participants(): void
+    public function testItComputesMinimalTransfersForThreeParticipants(): void
     {
         // Bill 1: R$120 (Alice pays), equal 3-way → each owes R$40
         // Bill 2: R$60  (Bob pays),   equal 3-way → each owes R$20
@@ -87,9 +84,9 @@ class BalanceCalculatorTest extends TestCase
         // Carlos: paid 0,  owes 40+20 = 60 → net -60
         // Transfer: Carlos → Alice R$60
 
-        $group  = GroupBuilder::new()->build();
-        $alice  = ParticipantBuilder::new()->withName('Alice')->withGroup($group)->build();
-        $bob    = ParticipantBuilder::new()->withName('Bob')->withGroup($group)->build();
+        $group = GroupBuilder::new()->build();
+        $alice = ParticipantBuilder::new()->withName('Alice')->withGroup($group)->build();
+        $bob = ParticipantBuilder::new()->withName('Bob')->withGroup($group)->build();
         $carlos = ParticipantBuilder::new()->withName('Carlos')->withGroup($group)->build();
 
         $bill1 = new Bill('Hotel', 12000, $alice, new \DateTimeImmutable(), SplitType::Equal, $group);
@@ -122,11 +119,11 @@ class BalanceCalculatorTest extends TestCase
         $this->assertSame(6000, $result->transfers[0]->amountCents);
     }
 
-    public function test_it_handles_participant_with_zero_net_balance(): void
+    public function testItHandlesParticipantWithZeroNetBalance(): void
     {
-        $group  = GroupBuilder::new()->build();
-        $alice  = ParticipantBuilder::new()->withName('Alice')->withGroup($group)->build();
-        $bob    = ParticipantBuilder::new()->withName('Bob')->withGroup($group)->build();
+        $group = GroupBuilder::new()->build();
+        $alice = ParticipantBuilder::new()->withName('Alice')->withGroup($group)->build();
+        $bob = ParticipantBuilder::new()->withName('Bob')->withGroup($group)->build();
         $carlos = ParticipantBuilder::new()->withName('Carlos')->withGroup($group)->build();
 
         // Bob pays exactly what he owes — net 0 for Bob
@@ -147,13 +144,13 @@ class BalanceCalculatorTest extends TestCase
         // Carlos must send Alice 3000; Bob is settled
         $nonZeroTransfers = array_filter(
             $result->transfers,
-            fn ($t) => $t->fromParticipantName === 'Bob' || $t->toParticipantName === 'Bob'
+            fn ($t) => 'Bob' === $t->fromParticipantName || 'Bob' === $t->toParticipantName
         );
 
         $this->assertCount(0, $nonZeroTransfers);
     }
 
-    public function test_it_produces_at_most_n_minus_one_transfers(): void
+    public function testItProducesAtMostNMinusOneTransfers(): void
     {
         $group = GroupBuilder::new()->build();
         $participants = [];
@@ -173,7 +170,7 @@ class BalanceCalculatorTest extends TestCase
         $this->assertLessThanOrEqual(4, count($result->transfers)); // n-1 = 5-1
     }
 
-    public function test_it_handles_complex_multi_bill_scenario(): void
+    public function testItHandlesComplexMultiBillScenario(): void
     {
         // From PROJECT_DEFINITIONS example:
         // Hotel R$300 paid by Alice, equal 3-way → Alice 100, Bob 100, Carlos 100
@@ -181,9 +178,9 @@ class BalanceCalculatorTest extends TestCase
         // Net: Alice +150, Bob -30, Carlos -120
         // Transfers: Bob→Alice 30, Carlos→Alice 120
 
-        $group  = GroupBuilder::new()->build();
-        $alice  = ParticipantBuilder::new()->withName('Alice')->withGroup($group)->build();
-        $bob    = ParticipantBuilder::new()->withName('Bob')->withGroup($group)->build();
+        $group = GroupBuilder::new()->build();
+        $alice = ParticipantBuilder::new()->withName('Alice')->withGroup($group)->build();
+        $bob = ParticipantBuilder::new()->withName('Bob')->withGroup($group)->build();
         $carlos = ParticipantBuilder::new()->withName('Carlos')->withGroup($group)->build();
 
         $hotel = new Bill('Hotel', 30000, $alice, new \DateTimeImmutable(), SplitType::Equal, $group);

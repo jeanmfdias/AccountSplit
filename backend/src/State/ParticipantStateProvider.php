@@ -39,7 +39,7 @@ final class ParticipantStateProvider implements ProviderInterface
         $id = $uriVariables['id'] ?? null;
 
         return $this->participantRepository->findOneBy([
-            'id'    => Uuid::fromString((string) $id),
+            'id' => Uuid::fromString((string) $id),
             'group' => Uuid::fromString((string) $groupId),
         ]);
     }

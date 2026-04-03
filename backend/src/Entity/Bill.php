@@ -30,6 +30,7 @@ use Symfony\Component\Uid\Uuid;
         new GetCollection(provider: BillStateProvider::class),
         new Post(
             input: BillInput::class,
+            provider: BillStateProvider::class,
             processor: BillStateProcessor::class,
         ),
     ],
@@ -53,7 +54,7 @@ use Symfony\Component\Uid\Uuid;
     ],
     uriVariables: [
         'groupId' => new Link(fromClass: Group::class, toProperty: 'group'),
-        'id'      => new Link(fromClass: Bill::class),
+        'id' => new Link(fromClass: Bill::class),
     ],
     normalizationContext: ['groups' => ['bill:read']],
     denormalizationContext: ['groups' => ['bill:write']],

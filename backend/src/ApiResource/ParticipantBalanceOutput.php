@@ -6,8 +6,8 @@ namespace App\ApiResource;
 
 final class ParticipantBalanceOutput
 {
-    public string $participantId   = '';
+    public string $participantId = '';
     public string $participantName = '';
-    public int    $netCents        = 0;
-    public string $formattedNet    = '';
+    public int $netCents = 0;
+    public string $formattedNet = '';
 }
