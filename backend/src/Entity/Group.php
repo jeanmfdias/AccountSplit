@@ -4,24 +4,50 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiProperty;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Repository\GroupRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[ORM\Table(name: '`group`')]
+#[ApiResource(
+    operations: [
+        new GetCollection(),
+        new Post(),
+        new Get(),
+        new Patch(),
+        new Delete(),
+    ],
+    normalizationContext: ['groups' => ['group:read']],
+    denormalizationContext: ['groups' => ['group:write']],
+)]
 class Group
 {
     #[ORM\Id]
     #[ORM\Column(type: 'uuid')]
+    #[Groups(['group:read'])]
+    #[ApiProperty(identifier: true)]
     private Uuid $id;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['group:read', 'group:write'])]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     private string $name;
 
     #[ORM\Column]
+    #[Groups(['group:read'])]
     private \DateTimeImmutable $createdAt;
 
     /** @var Collection<int, Participant> */
@@ -61,6 +87,12 @@ class Group
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    #[Groups(['group:read'])]
+    public function getParticipantCount(): int
+    {
+        return $this->participants->count();
     }
 
     /** @return Collection<int, Participant> */

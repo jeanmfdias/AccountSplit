@@ -6,6 +6,7 @@ namespace App\Entity;
 
 use App\Repository\BillShareRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
 
 #[ORM\Entity(repositoryClass: BillShareRepository::class)]
@@ -24,6 +25,7 @@ class BillShare
     private Participant $participant;
 
     #[ORM\Column]
+    #[Groups(['bill:read'])]
     private int $amountCents;
 
     public function __construct(Bill $bill, Participant $participant, int $amountCents)
@@ -66,5 +68,17 @@ class BillShare
         $this->amountCents = $amountCents;
 
         return $this;
+    }
+
+    #[Groups(['bill:read'])]
+    public function getParticipantId(): string
+    {
+        return (string) $this->participant->getId();
+    }
+
+    #[Groups(['bill:read'])]
+    public function getParticipantName(): string
+    {
+        return $this->participant->getName();
     }
 }
