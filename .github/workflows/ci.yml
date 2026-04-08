@@ -36,10 +36,6 @@ jobs:
         working-directory: backend
         run: php bin/console cache:warmup --env=test
 
-      - name: Create test schema
-        working-directory: backend
-        run: php bin/console doctrine:schema:create --env=test
-
       - name: Run PHPUnit
         working-directory: backend
         run: vendor/bin/phpunit --no-coverage
