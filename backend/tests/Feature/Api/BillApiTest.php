@@ -88,6 +88,45 @@ class BillApiTest extends ApiTestCase
         $this->assertResponseStatusCodeSame(422);
     }
 
+    public function testItUpdatesBillAndRecalculatesShares(): void
+    {
+        [$group, $participants] = $this->createGroupWithParticipants('Trip', ['Alice', 'Bob', 'Carlos']);
+
+        $aliceId = $participants['Alice']['id'];
+        $bobId   = $participants['Bob']['id'];
+        $carlosId = $participants['Carlos']['id'];
+
+        $bill = $this->json('POST', "/api/groups/{$group['id']}/bills", [
+            'description'          => 'Hotel',
+            'amountCents'          => 30000,
+            'paidByParticipantId'  => $aliceId,
+            'date'                 => '2026-01-15T00:00:00+00:00',
+            'splitType'            => 'equal',
+            'participantIds'       => [$aliceId, $bobId, $carlosId],
+        ]);
+
+        $this->assertResponseStatusCodeSame(201);
+
+        $updated = $this->jsonPatch(
+            "/api/groups/{$group['id']}/bills/{$bill['id']}",
+            [
+                'description'          => 'Hotel (updated)',
+                'amountCents'          => 60000,
+                'paidByParticipantId'  => $bobId,
+                'date'                 => '2026-01-20T00:00:00+00:00',
+                'splitType'            => 'equal',
+                'participantIds'       => [$aliceId, $bobId],
+            ],
+        );
+
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertSame('Hotel (updated)', $updated['description']);
+        $this->assertSame(60000, $updated['amountCents']);
+        $this->assertSame($bobId, $updated['paidBy']['id']);
+        $this->assertCount(2, $updated['shares']);
+        $this->assertSame(60000, array_sum(array_column($updated['shares'], 'amountCents')));
+    }
+
     public function testItRejectsParticipantFromDifferentGroup(): void
     {
         [$group1, $p1] = $this->createGroupWithParticipants('Group 1', ['Alice']);

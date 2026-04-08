@@ -77,8 +77,14 @@ final class BillStateProcessor implements ProcessorInterface
             );
             $this->entityManager->persist($bill);
         } else {
-            /** @var Bill $bill */
-            $bill = $context['previous_data'];
+            /** @var Bill $previous */
+            $previous = $context['previous_data'];
+            $bill = $this->entityManager->find(Bill::class, $previous->getId());
+
+            if (!$bill instanceof Bill) {
+                throw new NotFoundHttpException('Bill not found.');
+            }
+
             $bill->setDescription($data->description);
             $bill->setAmountCents($data->amountCents);
             $bill->setPaidBy($paidBy);

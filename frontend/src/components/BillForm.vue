@@ -177,17 +177,17 @@ interface FormState {
 function buildForm(): FormState {
   if (props.bill) {
     const b = props.bill
-    const pidList = b.shares.map((s) => s.participant.id)
+    const pidList = b.shares.map((s) => s.participantId)
     const percentages: Record<string, number> = {}
     const customAmounts: Record<string, number> = {}
 
     if (b.splitType === 'percentage') {
       b.shares.forEach((s) => {
-        percentages[s.participant.id] = (s.amountCents / b.amountCents) * 100
+        percentages[s.participantId] = (s.amountCents / b.amountCents) * 100
       })
     } else if (b.splitType === 'custom') {
       b.shares.forEach((s) => {
-        customAmounts[s.participant.id] = s.amountCents
+        customAmounts[s.participantId] = s.amountCents
       })
     }
 
