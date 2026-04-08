@@ -44,6 +44,10 @@ jobs:
         working-directory: backend
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
+      - name: Create .env file
+        working-directory: backend
+        run: cp .env.example .env
+
       - name: Warm up Symfony cache
         working-directory: backend
         run: php bin/console cache:warmup --env=test
@@ -74,6 +78,10 @@ jobs:
         working-directory: backend
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
+      - name: Create .env file
+        working-directory: backend
+        run: cp .env.example .env
+
       - name: Warm up Symfony cache (dev)
         working-directory: backend
         env:
@@ -102,6 +110,10 @@ jobs:
       - name: Install Composer dependencies
         working-directory: backend
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Create .env file
+        working-directory: backend
+        run: cp .env.example .env
 
       - name: Run PHP CS Fixer (dry-run)
         working-directory: backend
