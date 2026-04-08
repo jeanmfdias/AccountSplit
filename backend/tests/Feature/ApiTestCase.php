@@ -31,7 +31,7 @@ abstract class ApiTestCase extends WebTestCase
     {
         $em = static::getContainer()->get(EntityManagerInterface::class);
         $schemaTool = new SchemaTool($em);
-        $schemaTool->updateSchema($em->getMetadataFactory()->getAllMetadata(), true);
+        $schemaTool->updateSchema($em->getMetadataFactory()->getAllMetadata());
     }
 
     private function cleanDatabase(): void
