@@ -1,0 +1,23 @@
+services:
+  app:
+    build:
+      target: prod
+    volumes: []
+    environment:
+      APP_ENV: prod
+      CORS_ALLOW_ORIGIN: '^https?://accountsplit\.local$'
+
+  nginx:
+    image: accountsplit-nginx:prod
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/prod.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - app
+
+  db:
+    ports: []
