@@ -13,12 +13,18 @@ up:
 down:
 	$(COMPOSE) down
 
-prod-up:
+prod-build:
 	$(COMPOSE_PROD) build --no-cache
 	$(COMPOSE_PROD) up -d
 	$(EXEC_PROD) php bin/console doctrine:migrations:migrate --no-interaction
 
+prod-up:
+	$(COMPOSE_PROD) up -d
+
 prod-down:
+	$(COMPOSE_PROD) down
+
+prod-kill:
 	$(COMPOSE_PROD) down --remove-orphans
 
 build:
