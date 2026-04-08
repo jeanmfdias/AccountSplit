@@ -93,16 +93,16 @@ class BillApiTest extends ApiTestCase
         [$group, $participants] = $this->createGroupWithParticipants('Trip', ['Alice', 'Bob', 'Carlos']);
 
         $aliceId = $participants['Alice']['id'];
-        $bobId   = $participants['Bob']['id'];
+        $bobId = $participants['Bob']['id'];
         $carlosId = $participants['Carlos']['id'];
 
         $bill = $this->json('POST', "/api/groups/{$group['id']}/bills", [
-            'description'          => 'Hotel',
-            'amountCents'          => 30000,
-            'paidByParticipantId'  => $aliceId,
-            'date'                 => '2026-01-15T00:00:00+00:00',
-            'splitType'            => 'equal',
-            'participantIds'       => [$aliceId, $bobId, $carlosId],
+            'description' => 'Hotel',
+            'amountCents' => 30000,
+            'paidByParticipantId' => $aliceId,
+            'date' => '2026-01-15T00:00:00+00:00',
+            'splitType' => 'equal',
+            'participantIds' => [$aliceId, $bobId, $carlosId],
         ]);
 
         $this->assertResponseStatusCodeSame(201);
@@ -110,12 +110,12 @@ class BillApiTest extends ApiTestCase
         $updated = $this->jsonPatch(
             "/api/groups/{$group['id']}/bills/{$bill['id']}",
             [
-                'description'          => 'Hotel (updated)',
-                'amountCents'          => 60000,
-                'paidByParticipantId'  => $bobId,
-                'date'                 => '2026-01-20T00:00:00+00:00',
-                'splitType'            => 'equal',
-                'participantIds'       => [$aliceId, $bobId],
+                'description' => 'Hotel (updated)',
+                'amountCents' => 60000,
+                'paidByParticipantId' => $bobId,
+                'date' => '2026-01-20T00:00:00+00:00',
+                'splitType' => 'equal',
+                'participantIds' => [$aliceId, $bobId],
             ],
         );
 

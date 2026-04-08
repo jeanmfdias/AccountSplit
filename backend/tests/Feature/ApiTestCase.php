@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Feature;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Tools\SchemaTool;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -16,6 +17,7 @@ abstract class ApiTestCase extends WebTestCase
     {
         parent::setUp();
         $this->client = static::createClient();
+        $this->ensureSchema();
         $this->cleanDatabase();
     }
 
@@ -23,6 +25,13 @@ abstract class ApiTestCase extends WebTestCase
     {
         $this->cleanDatabase();
         parent::tearDown();
+    }
+
+    private function ensureSchema(): void
+    {
+        $em = static::getContainer()->get(EntityManagerInterface::class);
+        $schemaTool = new SchemaTool($em);
+        $schemaTool->updateSchema($em->getMetadataFactory()->getAllMetadata(), true);
     }
 
     private function cleanDatabase(): void
