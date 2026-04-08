@@ -40,13 +40,13 @@ jobs:
           extensions: pdo, pdo_pgsql, intl, ctype, iconv
           tools: composer:v2
 
-      - name: Install Composer dependencies
-        working-directory: backend
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
-
       - name: Create .env file
         working-directory: backend
         run: cp .env.example .env
+
+      - name: Install Composer dependencies
+        working-directory: backend
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Warm up Symfony cache
         working-directory: backend
@@ -74,13 +74,13 @@ jobs:
           extensions: pdo, pdo_pgsql, intl, ctype, iconv
           tools: composer:v2
 
-      - name: Install Composer dependencies
-        working-directory: backend
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
-
       - name: Create .env file
         working-directory: backend
         run: cp .env.example .env
+
+      - name: Install Composer dependencies
+        working-directory: backend
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Warm up Symfony cache (dev)
         working-directory: backend
@@ -107,13 +107,13 @@ jobs:
           extensions: pdo, pdo_pgsql, intl, ctype, iconv
           tools: composer:v2
 
-      - name: Install Composer dependencies
-        working-directory: backend
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader
-
       - name: Create .env file
         working-directory: backend
         run: cp .env.example .env
+
+      - name: Install Composer dependencies
+        working-directory: backend
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Run PHP CS Fixer (dry-run)
         working-directory: backend
